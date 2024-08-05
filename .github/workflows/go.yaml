@@ -8,7 +8,8 @@ on:
 
 jobs:
 
-  build:
+  build_and_tests:
+    name: Build and tests
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -29,3 +30,24 @@ jobs:
     - name: Test
       working-directory: ./cmd
       run: go test -v ./...
+
+  push_to_dockerhub:
+    name: push docker image to hub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag sprint12:latest
+
+      - name: login to docker registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
+
+      - name: build and push docker image to registry
+        uses: docker/build-push-action@v5
+        with:
+          context: DockerFileFolder/
+          push: true
+          tags: svkitler/sprint12:latest
