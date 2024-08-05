@@ -34,7 +34,8 @@ jobs:
   push_to_dockerhub:
     name: Build and push docker image to hub
     runs-on: ubuntu-latest
-    if: github.ref_type == 'tag' 
+    #if: github.ref_type == 'tag' 
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     steps:
       - uses: actions/checkout@v4
       - name: Build the Docker image
